@@ -184,7 +184,8 @@ helpers.assertProcessInfo = function (obj) {
   assume(obj.execPath).is.a('string');
   assume(obj.version).is.a('string');
   assume(obj.argv).is.an('array');
-  assume(obj.memoryUsage).is.an('object');
+  // assume(obj.memoryUsage).is.an('object');
+  // Not permission to use on sandstorm
 };
 
 /**
