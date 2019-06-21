@@ -1,16 +1,17 @@
 {
-  "name": "winston",
-  "description": "A logger for just about everything.",
+  "name": "winston-sandstorm",
+  "description": "node package winston which remove some feature unable on sandstorm",
   "version": "3.2.1",
   "author": "Charlie Robbins <charlie.robbins@gmail.com>",
   "maintainers": [
     "Jarrett Cruger <jcrugzz@gmail.com>",
     "Chris Alderson <chrisalderson@protonmail.com>",
-    "David Hyde <dabh@stanford.edu>"
+    "David Hyde <dabh@stanford.edu>",
+    "Erickson Zhuang<bingluen0224@gmail.com>"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/winstonjs/winston.git"
+    "url": "https://github.com/PDIS/winston-sandstorm.git"
   },
   "keywords": [
     "winston",
@@ -23,7 +24,8 @@
     "loglevel",
     "tools",
     "json",
-    "stream"
+    "stream",
+    "sandstorm"
   ],
   "dependencies": {
     "async": "^2.6.1",
