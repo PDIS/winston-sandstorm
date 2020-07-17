@@ -16,36 +16,46 @@ there are additional transports written by
 > Additionally there are transports previously maintained by winston
 > contributors that are [looking for maintainers](#looking-for-maintainers). 
 
-* **[Built-in to winston](#winston-core)**
+* **[Built-in to winston](#built-in-to-winston)**
   * [Console](#console-transport)
   * [File](#file-transport)
   * [Http](#http-transport)
   * [Stream](#stream-transport)
 
 * **[Maintained by winston contributors](#maintained-by-winston-contributors)**
-  * [MongoDB](#mongodb-transport)
   * [DailyRotateFile](#dailyrotatefile-transport)
+  * [MongoDB](#mongodb-transport)
   * [Syslog](#syslog-transport)
 
 * **[Community Transports](#community-transports)**
   * [Airbrake](#airbrake-transport)
   * [Amazon CloudWatch](#amazon-cloudwatch-transport)
+  * [Amazon DynamoDB](#amazon-dynamodb-transport)
   * [Amazon Kinesis Firehose](#amazon-kinesis-firehose-transport)
   * [Amazon SNS](#amazon-sns-simple-notification-system-transport)
   * [Azure Table](#azure-table)
   * [Cassandra](#cassandra-transport)
   * [Cisco Spark](#cisco-spark-transport)
-  * [Cloudant](#Cloudant)
+  * [Cloudant](#cloudant)
+  * [Datadog](#datadog-transport)
   * [Elasticsearch](#elasticsearch-transport)
   * [FastFileRotate](#fastfilerotate-transport)
+  * [Google BigQuery](#google-bigquery)
   * [Google Stackdriver Logging](#google-stackdriver-transport)
   * [Graylog2](#graylog2-transport)
-  * [Newrelic](#newrelic-transport) (errors only)
+  * [Humio](#humio-transport)
+  * [LogDNA](#logdna-transport)
   * [Logsene](#logsene-transport) (including Log-Alerts and Anomaly Detection)
   * [Logz.io](#logzio-transport)
   * [Mail](#mail-transport)
+  * [Newrelic](#newrelic-transport) (errors only)
+  * [Papertrail](#papertrail-transport)
+  * [PostgresQL](#postgresql-transport)
   * [Pusher](#pusher-transport)
+  * [Sentry](#sentry-transport)
   * [SimpleDB](#simpledb-transport)
+  * [Slack](#slack-transport)
+  * [SQLite3](#sqlite3-transport)
   * [SSE with KOA 2](#sse-transport-with-koa-2)
   * [Sumo Logic](#sumo-logic-transport)
   * [Winlog2 Transport](#winlog2-transport)
@@ -85,7 +95,7 @@ logger.add(new winston.transports.File(options));
 ```
 
 The File transport supports a variety of file writing options. If you are
-looking for daily log rotation see [DailyRotateFile]
+looking for daily log rotation see [DailyRotateFile](#dailyrotatefile-transport)
 
 * __level:__ Level of messages that this transport should log (default: level set on parent logger).
 * __silent:__ Boolean flag indicating whether to suppress output (default false).
@@ -252,7 +262,7 @@ Options:
 Alternatively, you may be interested in [winston-cloudwatch][26].
 
 ### Amazon DynamoDB Transport
-The [winston-dynamodb][26] transport uses Amazon's DynamoDB as a sink for log messages. You can take advantage of the various authentication methods supports by Amazon's aws-sdk module. See [Configuring the SDK in Node.js](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html).
+The [winston-dynamodb][36] transport uses Amazon's DynamoDB as a sink for log messages. You can take advantage of the various authentication methods supports by Amazon's aws-sdk module. See [Configuring the SDK in Node.js](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html).
 
 ``` js
 const winston = require('winston');
@@ -276,7 +286,7 @@ logger.add(new winston.transports.DynamoDB({
 });
 ```
 
-Also supports callbacks for completion when the DynamoDB putItem has been compelted.
+Also supports callbacks for completion when the DynamoDB putItem has been completed.
 
 ### Amazon Kinesis Firehose Transport
 
@@ -399,6 +409,62 @@ The Cloudant transport takes the following options:
     db          : Name of the databasename to put logs in
     logstash    : Write logs in logstash format
 
+### Datadog Transport
+[datadog-winston][38] is a transport to ship your logs to datadog.
+
+```javascript
+var winston = require('winston')
+var DatadogWinston = require('datadog-winston')
+
+var logger = winston.createLogger({
+  // Whatever options you need
+  // Refer https://github.com/winstonjs/winston#creating-your-own-logger
+})
+
+logger.add(
+  new DatadogWinston({
+    apiKey: 'super_secret_datadog_api_key',
+    hostname: 'my_machine',
+    service: 'super_service',
+    ddsource: 'node.js',
+    ddtags: 'foo:bar,boo:baz'
+  })
+)
+```
+
+Options:
+* __apiKey__: Your datadog api key *[required]*
+* __hostname__: The machine/server hostname
+* __service__: The name of the application or service generating the logs
+* __ddsource__: The technology from which the logs originated
+* __ddtags__: Metadata associated with the logs
+
+### Google BigQuery
+[winston-bigquery][42] is a transport for Google BigQuery.
+
+```js
+import {WinstonBigQuery} from 'winston-bigquery';
+import winston, {format} from 'winston';
+
+const logger = winston.createLogger({
+	transports: [
+		new WinstonBigQuery({
+			tableId: 'winston_logs',
+			datasetId: 'logs'
+		})
+	]
+});
+```
+
+The Google BigQuery takes the following options:
+
+* __datasetId__   	      	    : Your dataset name [required]
+* __tableId__     	  	    : Table name in the datase [required]
+* __applicationCredentials__    : a path to local service worker (useful in dev env) [Optional]
+
+**Pay Attention**, since BQ, unlike some other products, is not a "schema-less" you will need to build the schema in advance.
+read more on the topic on [github][42] or [npmjs.com][43]
+
 ### Google Stackdriver Transport
 
 [@google-cloud/logging-winston][29] provides a transport to relay your log messages to [Stackdriver Logging][30].
@@ -458,6 +524,52 @@ const logger = winston.createLogger({
     })
   ]
 })
+```
+
+### Humio Transport
+
+[humio-winston][44] is a transport for sending logs to Humio:
+
+``` js
+const winston = require('winston');
+const HumioTransport = require('humio-winston');
+
+const logger = winston.createLogger({
+  transports: [
+    new HumioTransport({
+      ingestToken: '<YOUR HUMIO INGEST TOKEN>',
+    }),
+  ],
+});
+```
+
+### LogDNA Transport
+
+[LogDNA Winston][37] is a transport for being able to forward the logs to [LogDNA](https://logdna.com/):
+
+``` js
+const logdnaWinston = require('logdna-winston');
+const winston = require('winston');
+const logger = winston.createLogger({});
+const options = {
+    key: apikey, // the only field required
+    hostname: myHostname,
+    ip: ipAddress,
+    mac: macAddress,
+    app: appName,
+    env: envName,
+    index_meta: true // Defaults to false, when true ensures meta object will be searchable
+};
+
+// Only add this line in order to track exceptions
+options.handleExceptions = true;
+
+logger.add(new logdnaWinston(options));
+
+let meta = {
+    data:'Some information'
+};
+logger.log('info', 'Log from LogDNA Winston', meta);
 ```
 
 ### Logzio Transport
@@ -558,6 +670,10 @@ The Papertrail transport connects to a [PapertrailApp log destination](https://p
 
 *Metadata:* Logged as a native JSON object to the 'meta' attribute of the item.
 
+### PostgresQL Transport
+
+[@pauleliet/winston-pg-native](https://github.com/petpano/winston-pg-native) is a PostgresQL transport supporting Winston 3.X.
+
 ### Pusher Transport
 [winston-pusher](https://github.com/meletisf/winston-pusher) is a Pusher transport.
 
@@ -576,6 +692,31 @@ This transport sends the logs to a Pusher app for real time processing and it us
   * __encrypted__ Whether the data will be send through SSL
 * __channel__ The channel of the event (default: default)
 * __event__ The event name (default: default)
+
+### Sentry Transport
+[winston-transport-sentry-node][41] is a transport for [Sentry](https://sentry.io/) uses [@sentry/node](https://www.npmjs.com/package/@sentry/node).
+
+```js
+const Sentry = require('winston-transport-sentry-node').default;
+logger.add(new Sentry({
+  sentry: {
+    dsn: 'https://******@sentry.io/12345',
+  },
+  level: 'info'
+});
+```
+
+This transport takes the following options:
+
+* __sentry:__ [Object]
+  * __dsn:__ Sentry DSN or Data Source Name (default: `process.env.SENTRY_DSN`) **REQUIRED**
+  * __environment:__ The application environment (default: `process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production'`)
+  * __serverName:__  The application name
+  * __debug:__ Turns debug mode on or off (default: `process.env.SENTRY_DEBUG || false`)
+  * __sampleRate:__ Sample rate as a percentage of events to be sent in the range of 0.0 to 1.0 (default: `1.0`)
+  * __maxBreadcrumbs:__ Total amount of breadcrumbs that should be captured (default: `100`)
+* __level:__ Level of messages that this transport should log
+* __silent:__  Boolean flag indicating whether to suppress output, defaults to false
 
 ### SimpleDB Transport
 
@@ -596,6 +737,54 @@ The SimpleDB transport takes the following options. All items marked with an ast
 * __itemName__: a string ('uuid', 'epoch', 'timestamp') or function that returns the item name to log
 
 *Metadata:* Logged as a native JSON object to the 'meta' attribute of the item.
+
+### Slack Transport
+[winston-slack-webhook-transport][39] is a transport that sends all log messages to the Slack chat service. 
+
+```js
+const winston = require('winston');
+const SlackHook = require('winston-slack-webhook-transport');
+
+const logger = winston.createLogger({
+	level: 'info',
+	transports: [
+		new SlackHook({
+			webhookUrl: 'https://hooks.slack.com/services/xxx/xxx/xxx'
+		})
+	]
+});
+
+logger.info('This should now appear on Slack');
+```
+
+This transport takes the following options: 
+
+* __webhookUrl__ - Slack incoming webhook URL. This can be from a basic integration or a bot. **REQUIRED**
+* __channel__ - Slack channel to post message to.
+* __username__ - Username to post message with.
+* __iconEmoji__ - Status icon to post message with. (interchangeable with __iconUrl__)
+* __iconUrl__ - Status icon to post message with. (interchangeable with __iconEmoji__)
+* __formatter__ - Custom function to format messages with. This function accepts the __info__ object ([see Winston documentation](https://github.com/winstonjs/winston/blob/master/README.md#streams-objectmode-and-info-objects)) and must return an object with at least one of the following three keys: __text__ (string), __attachments__ (array of [attachment objects](https://api.slack.com/docs/message-attachments)), __blocks__ (array of [layout block objects](https://api.slack.com/messaging/composing/layouts)). These will be used to structure the format of the logged Slack message. By default, messages will use the format of `[level]: [message]` with no attachments or layout blocks.
+* __level__ - Level to log. Global settings will apply if this is blank.
+* __unfurlLinks__ - Enables or disables [link unfurling.](https://api.slack.com/docs/message-attachments#unfurling) (Default: false)
+* __unfurlMedia__ - Enables or disables [media unfurling.](https://api.slack.com/docs/message-link-unfurling) (Default: false)
+* __mrkdwn__ - Enables or disables [`mrkdwn` formatting](https://api.slack.com/messaging/composing/formatting#basics) within attachments or layout blocks (Default: false)
+
+### SQLite3 Transport
+
+The [winston-better-sqlite3][40] transport uses [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3).
+
+```js
+const wbs = require('winston-better-sqlite3');
+logger.add(new wbs({
+
+    // path to the sqlite3 database file on the disk
+    db: '<name of sqlite3 database file>',
+    
+    // A list of params to log
+    params: ['level', 'message']
+});
+```
 
 ### Sumo Logic Transport
 [winston-sumologic-transport][32] is a transport for Sumo Logic
@@ -724,7 +913,7 @@ In addition to the options accepted by the [riak-js][12] [client][13], the Riak 
 
 ## Find more Transports
 
-There are almost 1000 packages on `npm` when [you search for] `winston`.
+There are more than 1000 packages on `npm` when [you search for] `winston`.
 That's why we say it's a logger for just about everything 
 
 [you search for]: https://www.npmjs.com/search?q=winston
@@ -764,3 +953,12 @@ That's why we say it's a logger for just about everything
 [33]: https://github.com/peteward44/winston-winlog2
 [34]: https://github.com/hakanostrom/winston-cloudant
 [35]: https://github.com/SerayaEryn/fast-file-rotate
+[36]: https://github.com/inspiredjw/winston-dynamodb
+[37]: https://github.com/logdna/logdna-winston
+[38]: https://github.com/itsfadnis/datadog-winston
+[39]: https://github.com/TheAppleFreak/winston-slack-webhook-transport
+[40]: https://github.com/punkish/winston-better-sqlite3
+[41]: https://github.com/aandrewww/winston-transport-sentry-node
+[42]: https://github.com/kaminskypavel/winston-bigquery
+[43]: https://www.npmjs.com/package/winston-bigquery
+[44]: https://github.com/Quintinity/humio-winston
