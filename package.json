@@ -39,7 +39,7 @@
     "winston-transport": "^4.4.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.3",
+    "@babel/cli": "^7.14.5",
     "@babel/core": "^7.10.3",
     "@babel/preset-env": "^7.10.3",
     "@types/node": "^14.0.13",
@@ -49,7 +49,7 @@
     "cross-spawn-async": "^2.2.5",
     "eslint-config-populist": "^4.2.0",
     "hock": "^1.4.1",
-    "mocha": "^8.0.1",
+    "mocha": "^9.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "split2": "^3.1.1",
